@@ -89,7 +89,7 @@ app.post('/send', async (req, res) => {
     try{
         const client = Sib.ApiClient.instance;
         const apiKey = client.authentications['api-key'];
-        apiKey.apiKey = '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';
+        apiKey.apiKey = process.env.SMTP_KEY;
         const tranEmailApi = new Sib.TransactionalEmailsApi()
         const sender = {
             email: email
