@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const Message = require('./model');
 
-
+const cors = require('cors')
 // INIT
 const app = express();
 app.use(express.json());
@@ -23,9 +23,10 @@ mongoose.connect(DB, {
 
 
 app.use(express.json({ limit : '10kb' }));
-
+app.use(cors({
+    origin: ['https://www.dfwsolarreport.org']
+  }))
 app.use(function (req, res, next) {
-    // res.setHeader('Access-Control-Allow-Origin', 'https://www.raniadev.com');
     res.setHeader('Access-Control-Allow-Origin', 'https://www.dfwsolarreport.org');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type', 'X-HTTP-Method-Override', 'X-Requested-With');
