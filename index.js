@@ -1,3 +1,4 @@
+var Sib = require('sib-api-v3-sdk');
 const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
@@ -25,7 +26,7 @@ app.use(express.json({ limit : '10kb' }));
 
 app.use(function (req, res, next) {
     // res.setHeader('Access-Control-Allow-Origin', 'https://www.raniadev.com');
-    res.setHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:5500');
+    res.setHeader('Access-Control-Allow-Origin', 'https://www.dfwsolarreport.org');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type', 'X-HTTP-Method-Override', 'X-Requested-With');
     res.setHeader('Access-Control-Allow-Credentials', true);
@@ -83,7 +84,39 @@ app.post('/send-email', async (req, res) => {
     }
 })
 
+app.post('/send', async (req, res) => {
+    const {homeStatus, adress, electricBill, electricCompany, creditScore, name, phone, email, date, hour} = req.body
+    try{
+        const client = Sib.ApiClient.instance;
+        const apiKey = client.authentications['api-key'];
+        apiKey.apiKey = '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';
+        const tranEmailApi = new Sib.TransactionalEmailsApi()
+        const sender = {
+            email: email
+        }
+        const receiver = [
+            {
+                email: 'saadirania406@gmail.com',
+            }
+        ]
+        tranEmailApi.sendTransacEmail({
+            sender,
+            to: receiver,
+            subject:`Message from ${name}`,
+            htmlContent: `<html><head></head><body><p>name: ${name}</p><p>phone: ${phone}</p><p>email: ${email}</p><p>Do you own your home? :${homeStatus}</p><p>Street address :${adress}</p><p>Average electric bill  :${electricBill}</p><p>current electric company  :${electricCompany}</p><p>Do you have a credit score of 600 or higher :${creditScore}</p><p>Slected Date and Hour :${date} at ${hour}</p></body></html>`
+        }).then(console.log).catch(console.log)
 
+        return res.status(201).json({
+            status: 'success',
+            message: 'message sent succussfully!'
+        })
+    }catch(err){
+        return res.status(400).json({
+            status: 'error',
+            err
+        })
+    }
+})
 // RUN THE SERVER
 const port = process.env.PORT || 5000
 app.listen(port, () => console.log(`server running on ${port}.....`))
